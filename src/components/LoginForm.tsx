@@ -23,11 +23,7 @@ const loginSchema = z.object({
   }),
 });
 
-interface LoginFormProps {
-  handleSuccess: () => void;
-}
-
-const LoginForm = ({ handleSuccess }: LoginFormProps) => {
+const LoginForm = () => {
   const { mutate, isPending, isError } = useMutation({
     mutationFn: (values: z.infer<typeof loginSchema>) =>
       axios.post('https://g6-server.dainreview.kr/api/login', values, {
@@ -43,7 +39,14 @@ const LoginForm = ({ handleSuccess }: LoginFormProps) => {
   });
 
   const onSubmit = (values: z.infer<typeof loginSchema>) => {
-    mutate(values, { onSuccess: handleSuccess });
+    mutate(values, {
+      onSuccess: () => {
+        sessionStorage.setItem(
+          'login',
+          (new Date().valueOf() + 1000 * 60 * 30).toString()
+        );
+      },
+    });
   };
 
   return (
